@@ -1,0 +1,49 @@
+{
+  "name": "remove-ai-watermark",
+  "version": "1.0.0",
+  "description": "Sanitize images, text documents, and codebases by removing C2PA manifests, EXIF metadata, invisible zero-width unicode watermarks, Bidi control characters, LLM prompt tokens, and steganography signals.",
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "lib/index.js",
+  "bin": {
+    "remove-ai-watermark": "bin/cli.js"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "sharp": "^0.35.0"
+  },
+  "keywords": [
+    "watermark",
+    "watermark-remover",
+    "remove-watermark",
+    "c2pa",
+    "exif",
+    "steganography",
+    "zero-width",
+    "unicode",
+    "sanitize",
+    "cleaner",
+    "image-processing",
+    "cli"
+  ],
+  "author": "Aman Ghuman",
+  "homepage": "https://amanghuman.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amanghuman/remove-ai-watermark.git"
+  },
+  "bugs": {
+    "url": "https://github.com/amanghuman/remove-ai-watermark/issues"
+  }
+}
