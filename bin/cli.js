@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const path = require('path');
-const { cleanDirectory, loadConfig, initProject, initCI } = require('../lib');
+const { cleanDirectory, loadConfig, initProject, initCI, identifyPath } = require('../lib');
 const pkg = require('../package.json');
 
 const args = process.argv.slice(2);
@@ -13,9 +13,11 @@ Sanitize images, text documents, and codebases by stripping EXIF/C2PA metadata, 
 
 Usage:
   npx remove-ai-watermark [options] [files/directories...]
+  npx remove-ai-watermark identify <file>
   npx remove-ai-watermark init [--ci]
 
 Commands:
+  identify <file>          Inspect file for C2PA, IPTC, zero-width, and prompt markers
   init                     Initialize .watermarkrc config and git pre-commit hook
   init --ci                Generate GitHub Actions CI verification workflow
 
@@ -37,6 +39,41 @@ Options:
 
 if (args.includes('--version')) {
   console.log(`v${pkg.version}`);
+  process.exit(0);
+}
+
+if (args[0] === 'identify') {
+  const target = args[1];
+  if (!target) {
+    console.error('Error: Please specify a file path to identify.');
+    process.exit(1);
+  }
+  const report = identifyPath(target);
+  if (!report) {
+    console.error(`Error: File not found: ${target}`);
+    process.exit(1);
+  }
+
+  console.log(`
+Provenance & Forensic Diagnostic Report
+--------------------------------------
+File: ${report.path}
+Type: ${report.type}
+`);
+
+  if (report.type === 'image') {
+    console.log(`C2PA Manifest Detected: ${report.hasC2pa ? 'YES' : 'NO'}`);
+    console.log(`IPTC AI Marker Detected: ${report.hasIptcAi ? 'YES' : 'NO'}`);
+    console.log(`Metadata Keys Found: ${report.detectedKeys.length > 0 ? report.detectedKeys.join(', ') : 'None'}`);
+  } else if (report.type === 'text') {
+    console.log(`Zero-Width Unicode Characters: ${report.zeroWidth}`);
+    console.log(`Bidi Override Security Controls: ${report.bidi}`);
+    console.log(`LLM Prompt Tokens: ${report.tokens}`);
+    console.log(`Obscure Spaces: ${report.spaces}`);
+  } else {
+    console.log('No supported metadata or text structures detected.');
+  }
+
   process.exit(0);
 }
 

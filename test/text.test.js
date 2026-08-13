@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { cleanText } = require('../lib/text');
+const { cleanText, identifyText } = require('../lib/text');
 
 test('cleanText - strips zero-width spaces', () => {
   const dirty = 'Hello\u200BWorld\uFEFFTest\u200C';
@@ -59,4 +59,13 @@ test('cleanText - strips AI comment signatures in Python', () => {
   const res = cleanText(code, { ext: '.py' });
   assert.doesNotMatch(res.text, new RegExp(sig));
   assert.equal(res.stats.commentCount, 1);
+});
+
+test('identifyText - reports zero width and prompt tokens', () => {
+  const t1 = '<|im_' + 'start|>';
+  const dirty = `Hello\u200BWorld ${t1}`;
+  const report = identifyText(dirty);
+  assert.equal(report.hasArtifacts, true);
+  assert.equal(report.zeroWidth, 1);
+  assert.equal(report.tokens, 1);
 });
